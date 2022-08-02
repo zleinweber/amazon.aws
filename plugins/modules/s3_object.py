@@ -906,7 +906,8 @@ def ensure_tags(client, module, bucket, obj):
     try:
         current_tags_dict = get_current_object_tags_dict(client, bucket, obj)
     except is_boto3_error_code(IGNORE_S3_DROP_IN_EXCEPTIONS):
-        module.warn("GetObjectTagging is not implemented by your storage provider. Set the permission parameters to the empty list to avoid this warning.")
+        module.warn("GetObjectTagging is not implemented by your storage provider.")
+        return {}, changed
     except (botocore.exceptions.BotoCoreError, botocore.exceptions.ClientError) as e:  # pylint: disable=duplicate-except
         module.fail_json_aws(e, msg="Failed to get object tags.")
     else:
