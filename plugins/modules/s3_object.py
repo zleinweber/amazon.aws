@@ -1063,8 +1063,11 @@ def main():
     exists = bucket_check(module, s3, bucket)
     if exists:
         try:
-            object_ownership = s3.get_bucket_ownership_controls(Bucket=bucket)['OwnershipControls']['Rules'][0]['ObjectOwnership']
-            if object_ownership == 'BucketOwnerEnforced':
+            #object_ownership = s3.get_bucket_ownership_controls(Bucket=bucket)['OwnershipControls']['Rules'][0]['ObjectOwnership']
+            object_ownership = s3.get_bucket_ownership_controls(Bucket=bucket)['OwnershipControls'].get('Rules', None)
+            if object_ownership is None:
+                acl_disabled = True
+            elif object_ownership[0]['ObjectOwnership'] == 'BucketOwnerEnforced':
                 acl_disabled = True
         # if bucket ownership controls are not found
         except botocore.exceptions.ClientError as e:
